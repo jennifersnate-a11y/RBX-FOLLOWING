@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Data Submission — Privacy Masked Form</title>
+  <style>
+    :root{
+      --bg: linear-gradient(135deg,#ff9a9e 0%,#fad0c4 50%,#fbc2eb 100%);
+      --card:#ffffffcc;
+      --accent:#6a11cb;
+      --accent2:#2575fc;
+      --muted:#555;
+      --success:#16a34a;
+      --danger:#e11d48;
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);background-attachment:fixed;}
+    .container{max-width:920px;margin:40px auto;padding:28px;background:var(--card);border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,0.12);}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;}
+    h1{margin:0;font-size:1.5rem}
+    p.lead{color:var(--muted);margin-top:6px}
+    form{margin-top:20px;display:grid;gap:12px}
+    label{font-weight:600;color:#222}
+    .row{display:flex;gap:12px;align-items:center}
+    input[type=number]{width:200px;padding:10px;border-radius:8px;border:1px solid #ddd;font-size:1rem}
+    .note{font-size:.9rem;color:var(--muted)}
+    .masked-area{position:relative}
+    textarea.masked{width:100%;min-height:160px;padding:12px;border-radius:12px;border:1px dashed rgba(0,0,0,0.12);font-size:0.95rem;resize:vertical;background:linear-gradient(180deg,#fff,#fafafa)}
+    .helper{font-size:.9rem;color:var(--muted)}
+    .warning{color:var(--danger);font-weight:700}
+    button.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;padding:12px 18px;border-radius:12px;border:0;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(39,22,87,0.12)}
+    button.primary[disabled]{opacity:.6;cursor:not-allowed}
+    .flex-between{display:flex;justify-content:space-between;align-items:center}
+    .captcha-box{padding:12px;border-radius:10px;background:rgba(255,255,255,0.9);border:1px solid #eee}
+    footer{margin-top:28px;padding-top:20px;border-top:1px solid rgba(0,0,0,0.05)}
+    .faq h2{margin:0 0 8px 0}
+    details{background:var(--glass);padding:12px;border-radius:10px;margin-bottom:8px}
+    .small-muted{font-size:.9rem;color:var(--muted)}
+    .success{color:var(--success);font-weight:700}
+    .danger{color:var(--danger);font-weight:700}
+    @media (max-width:600px){.row{flex-direction:column;align-items:stretch}input[type=number]{width:100%}}
+  </style>
+</head>
+<body>
+  <main class="container" role="main">
+    <header>
+      <div class="logo" aria-hidden="true">DS</div>
+      <div>
+        <h1>Data Submission (masked)</h1>
+        <p class="lead">Paste your data list into the field below. The visible characters are masked for privacy. This form is for lawful, legitimate uses only.</p>
+      </div>
+    </header>
+
+    <form id="mainForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" autocomplete="off" novalidate>
+      <!-- Replace action with your Formspree endpoint (https://formspree.io/f/xxxxx) -->
+
+      <div>
+        <label for="amount">Amount Of Followers</label>
+        <div class="row">
+          <input id="amount" name="amount" type="number" min="1" max="10000" value="1" required aria-describedby="amountNote" />
+          <div class="note" id="amountNote">Enter a number from 1 — 10,000. Submissions above 10,000 are blocked.</div>
+        </div>
+        <div id="amountWarning" class="warning" role="alert" style="display:none">MAX 10,000 — please reduce the amount.</div>
+      </div>
+
+      <div class="masked-area">
+        <label for="masked">Follower Directory (paste here)</label>
+        <textarea id="masked" class="masked" aria-label="Masked data input" placeholder="Paste your long line here..." spellcheck="false"></textarea>
+        <div class="helper small-muted">The text you paste will be masked (dots) for privacy. The real value will be submitted but never displayed after you leave this page.</div>
+
+        <!-- Hidden real field that will hold the unmasked data for submission -->
+        <textarea id="realData" name="follower_directory" style="display:none" aria-hidden="true"></textarea>
+      </div>
+
+      <!-- Non-dismissible consent (for demo). For real sites, present clear, optional consent. -->
+      <input type="hidden" name="consent" value="true" />
+      <div class="small-muted">By submitting you confirm you have permission to submit this data and will not use it to violate any platform's Terms of Service.</div>
+
+      <!-- CAPTCHA placeholder -->
+      <div id="captchaContainer" class="captcha-box" style="margin-top:12px">
+        <div id="captchaArea">
+          <!-- Replace the following placeholder with a real CAPTCHA widget (reCAPTCHA, hCaptcha, etc.) -->
+          <div id="captchaPlaceholder" class="small-muted">CAPTCHA will appear here. Please configure and add your site key in the HTML file.</div>
+        </div>
+        <div class="small-muted">We store a solved CAPTCHA token in your browser (localStorage) for a limited time to avoid repeated prompts.</div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
+        <button id="submitBtn" class="primary" type="submit">Send</button>
+        <div id="sendStatus" class="small-muted" aria-live="polite"></div>
+      </div>
+
+      <!-- Formspree recommends adding an email field or redirect. Customize as needed. -->
+      <input type="hidden" name="_subject" value="New Data Submission" />
+    </form>
+
+    <footer>
+      <section class="faq">
+        <h2>Questions? Here are the answers to some common questions we hear from our appreciated users.</h2>
+
+        <details>
+          <summary><strong>Is this service safe to use?</strong></summary>
+          <p class="small-muted">This template is neutral. For any real service, follow platform Terms of Service and applicable law. This form includes a CAPTCHA to reduce automated abuse and masks pasted content in the UI for privacy. Do not use this form for illicit or TOS-violating activities.</p>
+        </details>
+
+        <details>
+          <summary><strong>How many items can I submit?</strong></summary>
+          <p class="small-muted">Per the interface limit, a single submission caps the numeric "Amount" at 10,000. The form will block submissions with values above that limit.</p>
+        </details>
+
+        <details>
+          <summary><strong>Why is this free?</strong></summary>
+          <p class="small-muted">This is a demo/template. If you offer a real service, explain your pricing or promotional period here. (Example: free trial or promotional period through October 18, 2026.)</p>
+        </details>
+      </section>
+    </footer>
+  </main>
+
+  <script>
+    // WARNING: Do not use this form for violating Terms of Service or other rules.
+    // Replace FORM_ACTION and CAPTCHA integrations before going live.
+
+    const masked = document.getElementById('masked');
+    const real = document.getElementById('realData');
+    const amount = document.getElementById('amount');
+    const amountWarning = document.getElementById('amountWarning');
+    const submitBtn = document.getElementById('submitBtn');
+    const mainForm = document.getElementById('mainForm');
+    const sendStatus = document.getElementById('sendStatus');
+
+    // Masking behavior: keep the real content in a hidden textarea and show dot characters to the user
+    function setRealAndMask(text) {
+      // Store the real content
+      real.value = text || '';
+      // Build a masked representation
+      const lines = (text || '').split('\\n');
+      let maskedPresentation = lines.map(l => '•'.repeat(Math.max(1, l.length))).join('\\n');
+      masked.value = maskedPresentation;
+    }
+
+    // Handle paste event to capture real data
+    masked.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
+      setRealAndMask(paste);
+    });
+
+    // Prevent direct typing from showing content; any typing will map to a single dot per character and be stored
+    masked.addEventListener('input', (e) => {
+      // Determine desired length based on user's input (for editing)
+      // We'll allow typing but mirror it in the hidden real field as literal characters typed
+      const currentDots = masked.value;
+      // If user typed, we cannot infer the actual characters, so we keep the previous real content.
+      // For safety and privacy, if the user types directly, we clear the real field (require paste).
+      if (!currentDots.trim()) {
+        real.value = '';
+        return;
+      }
+      // If masked changed because of pasted replacement handled above, do nothing.
+      // For simplicity: do not allow direct editing of masked content to build real content.
+      // Restore a dot-only presentation.
+      masked.value = '•'.repeat(Math.max(1, (real.value || '').length));
+    });
+
+    // If the user clicks the masked area, focus it so paste works
+    masked.addEventListener('focus', () => {
+      // nothing special
+    });
+
+    // Amount validation
+    function validateAmount() {
+      const val = Number(amount.value || 0);
+      if (val > 10000) {
+        amountWarning.style.display = 'block';
+        submitBtn.disabled = true;
+        return false;
+      } else if (val < 1) {
+        submitBtn.disabled = true;
+        return false;
+      } else {
+        amountWarning.style.display = 'none';
+        submitBtn.disabled = false;
+        return true;
+      }
+    }
+
+    amount.addEventListener('input', validateAmount);
+
+    // Simple CAPTCHA token handling (placeholder). Integrate your provider here.
+    const CAPTCHA_KEY = 'YOUR_CAPTCHA_SITE_KEY'; // Replace with real site key
+    const CAPTCHA_TOKEN_KEY = 'captcha_token';
+    const CAPTCHA_TOKEN_TTL_MS = 1000 * 60 * 60; // 1 hour
+
+    function getStoredCaptcha() {
+      try {
+        const raw = localStorage.getItem(CAPTCHA_TOKEN_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (Date.now() - data.ts < CAPTCHA_TOKEN_TTL_MS) return data.token;
+        localStorage.removeItem(CAPTCHA_TOKEN_KEY);
+        return null;
+      } catch (e) { return null; }
+    }
+
+    function storeCaptcha(token) {
+      try {
+        localStorage.setItem(CAPTCHA_TOKEN_KEY, JSON.stringify({token, ts: Date.now()}));
+      } catch (e) {}
+    }
+
+    // Example function to check if CAPTCHA is already solved
+    const storedToken = getStoredCaptcha();
+    if (storedToken) {
+      // Hide or mark CAPTCHA satisfied in UI; real verification must be performed server-side.
+      const capArea = document.getElementById('captchaArea');
+      capArea.innerHTML = '<div class="success">CAPTCHA previously solved in this browser — you may submit without additional verification.</div>';
+    } else {
+      // In production, you would render your CAPTCHA widget here (reCAPTCHA/hCaptcha).
+      // The widget should call a callback that receives a token, then call storeCaptcha(token).
+      // Example (reCAPTCHA v2): grecaptcha.render(...), and in the callback: storeCaptcha(token).
+      // For security: always verify the token server-side when receiving the form POST.
+      const capArea = document.getElementById('captchaArea');
+      capArea.innerHTML = '<div class="small-muted">Configure a CAPTCHA provider and place its widget here. The demo does not include an active CAPTCHA.</div>';
+    }
+
+    // On submit: ensure amount valid and that we have real data populated
+    mainForm.addEventListener('submit', (e) => {
+      // Prevent default to run checks, then allow natural POST when ok
+      if (!validateAmount()) {
+        e.preventDefault();
+        sendStatus.textContent = 'Please fix errors before sending.';
+        sendStatus.className = 'danger';
+        return;
+      }
+
+      if (!real.value || real.value.trim().length === 0) {
+        e.preventDefault();
+        sendStatus.textContent = 'Please paste your data into the field (use paste).';
+        sendStatus.className = 'danger';
+        return;
+      }
+
+      // Example: require CAPTCHA token in localStorage (placeholder)
+      const token = getStoredCaptcha();
+      if (!token) {
+        e.preventDefault();
+        sendStatus.textContent = 'Please complete the CAPTCHA before submitting.';
+        sendStatus.className = 'danger';
+        return;
+      }
+
+      // Everything looks okay: allow submission to Formspree.
+      sendStatus.textContent = 'Sending…';
+      sendStatus.className = '';
+      // Note: If you want to submit via AJAX, you can fetch() to the Formspree endpoint
+      // instead of letting the native POST happen. Formspree also supports AJAX submissions.
+      // Here we allow native submit to proceed.
+    });
+
+    // Initialize mask with empty
+    setRealAndMask('');
+    validateAmount();
+
+  </script>
+</body>
+</html>
